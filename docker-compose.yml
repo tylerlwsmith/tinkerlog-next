@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  webserver:
+    image: tylerlwsmith:tinkerlog-next-webserver:${BUILD_TAG:-latest}
+    container_name: tinerklog-next-webserver
+    build:
+      context: .
+      target: ${BUILD_TARGET:-development}
+      dockerfile: dockerfiles/webserver.Dockerfile
+    volumes:
+      - /etc/caddy:webserver
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:8080:80
+    enviornment:
+      SITE_HOST: ${SITE_HOST}
+
+  webapp:
+    image: tylerlwsmith:tinkerlog-next-webapp:${BUILD_TAG:-latest}
+    container_name: tinkerlog-next-webapp
+    build:
+      context: .
+      target: ${BUILD_TARGET:-development}
+      dockerfile: dockerfiles/webapp.Dockerfile
+      args:
+        USER_UID: ${USER_UID}
+        USER_GID: ${USER_GID}
+    volumes:
+      - ./webapp:/srv/app
+    depends_on:
+      - database
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:4000:4000
+    environment:
+
+  database:
+    container_name: tinkerlog-next-database
+    # TBA...
