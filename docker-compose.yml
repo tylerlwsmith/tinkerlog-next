@@ -9,7 +9,10 @@ services:
       target: ${BUILD_TARGET:-development}
       dockerfile: dockerfiles/webserver.Dockerfile
     volumes:
-      - /etc/caddy:webserver
+      - ./webserver/Caddyfile:/etc/caddy/Caddyfile
+      - ./webapp:/srv/app
+      - caddy_data:/data
+      - caddy_config:/config
     restart: unless-stopped
     ports:
       - 127.0.0.1:8080:80
@@ -36,5 +39,19 @@ services:
     environment:
 
   database:
+    image: postgres:15.1-alpine
     container_name: tinkerlog-next-database
-    # TBA...
+    restart: unless-stopped
+    volumes:
+      - database:/var/lib/postgresql/data
+    ports:
+      - 127.0.0.1:${DB_PORT:-5432}:5432
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+volumes:
+  database:
+  caddy_data:
+  caddy_config:
