@@ -1,26 +1,26 @@
 version: "3.9"
 
 services:
-  webserver:
-    image: tylerlwsmith:tinkerlog-next-webserver:${BUILD_TAG:-latest}
-    container_name: tinerklog-next-webserver
-    build:
-      context: .
-      target: ${BUILD_TARGET:-development}
-      dockerfile: dockerfiles/webserver.Dockerfile
-    volumes:
-      - ./webserver/Caddyfile:/etc/caddy/Caddyfile
-      - ./webapp:/srv/app
-      - caddy_data:/data
-      - caddy_config:/config
-    restart: unless-stopped
-    ports:
-      - 127.0.0.1:8080:80
-    enviornment:
-      SITE_HOST: ${SITE_HOST}
+  # webserver:
+  #   image: tylerlwsmith:tinkerlog-next-webserver:${BUILD_TAG:-latest}
+  #   container_name: tinerklog-next-webserver
+  #   build:
+  #     context: .
+  #     target: ${BUILD_TARGET:-development}
+  #     dockerfile: dockerfiles/webserver.Dockerfile
+  #   volumes:
+  #     - ./webserver/Caddyfile:/etc/caddy/Caddyfile
+  #     - ./webapp:/srv/app
+  #     - caddy_data:/data
+  #     - caddy_config:/config
+  #   restart: unless-stopped
+  #   ports:
+  #     - 127.0.0.1:8080:80
+  #   enviornment:
+  #     SITE_HOST: ${SITE_HOST}
 
   webapp:
-    image: tylerlwsmith:tinkerlog-next-webapp:${BUILD_TAG:-latest}
+    image: tylerlwsmith:tinkerlog-next-webapp
     container_name: tinkerlog-next-webapp
     build:
       context: .
@@ -37,6 +37,9 @@ services:
     ports:
       - 127.0.0.1:4000:4000
     environment:
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
 
   database:
     image: postgres:15.1-alpine
